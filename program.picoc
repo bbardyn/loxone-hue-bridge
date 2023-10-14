@@ -1,0 +1,149 @@
+int nEvents;
+char sR[4];
+char sG[4];
+char sB[4];
+char sLoxInputI1[10];
+float fLoxInputI1;
+float fR;
+float fG;
+float fB;
+float fPhilipsR;
+float fPhilipsG;
+float fPhilipsB;
+float white;
+float hue;
+float sat;
+float bri;
+
+void setPhilipsXyOutput(float x, float y, float bri) {
+    char output[84]; // = "{ \"on\": true, \"hue\": 65535, \"sat\": 254, \"bri\": 254 }";
+    char cX[6];
+    char cY[6];
+    char cBri[6];
+
+    // Cast the value to characters to work with later
+    sprintf(cX, "%f", (float)x);  
+    sprintf(cY, "%f", (float)y);  
+    sprintf(cBri, "%d", (int)bri);  
+
+	// If brightness = 0, turn off the light
+    if (bri == 0) {
+        strcat(output,"{ \"on\": false }");
+        setoutputtext(0, &output);
+        free(output);
+        return;
+    }
+
+	// Build the json string for Philips
+    strcat(output,"{ \"on\": true, \"xy\": [ ");
+    strcat(output, cX);
+    strcat(output,", ");
+    strcat(output, cY);
+    strcat(output," ], \"bri\": ");
+    strcat(output, cBri);
+    strcat(output," }");
+
+	// Send the string to the string output 
+    setoutputtext(0, &output);
+    free(output);
+    return;
+} 
+
+while (TRUE) {
+    nEvents = getinputevent();
+    if(nEvents){
+        fLoxInputI1 = getinput(0); // Receive value from input I1
+
+        sprintf(sLoxInputI1, "%d", (int)fLoxInputI1);  // Cast the value to characters to work with
+
+        // Convert the incomming RGB value to a value we can work with (incomming = %-value red + %-value green * 1000 + %-value blue * 1000000 )
+        if (strlen(sLoxInputI1) == 9) {
+            sB[0] = sLoxInputI1[0]; sB[1] = sLoxInputI1[1]; sB[2] = sLoxInputI1[2]; sB[3] = '\0';
+            sG[0] = sLoxInputI1[3]; sG[1] = sLoxInputI1[4]; sG[2] = sLoxInputI1[5]; sG[3] = '\0';
+            sR[0] = sLoxInputI1[6]; sR[1] = sLoxInputI1[7]; sR[2] = sLoxInputI1[8]; sR[3] = '\0';
+        }
+        else if (strlen(sLoxInputI1) == 8) {
+            sB[0] = '0'; sB[1] = sLoxInputI1[0]; sB[2] = sLoxInputI1[1]; sB[3] = '\0';
+            sG[0] = sLoxInputI1[2]; sG[1] = sLoxInputI1[3]; sG[2] = sLoxInputI1[4]; sG[3] = '\0';
+            sR[0] = sLoxInputI1[5]; sR[1] = sLoxInputI1[6]; sR[2] = sLoxInputI1[7]; sR[3] = '\0';
+        }
+        else if (strlen(sLoxInputI1) == 7) {
+            sB[0] = '0'; sB[1] = '0'; sB[2] = sLoxInputI1[0]; sB[3] = '\0';
+            sG[0] = sLoxInputI1[1]; sG[1] = sLoxInputI1[2]; sG[2] = sLoxInputI1[3]; sG[3] = '\0';
+            sR[0] = sLoxInputI1[4]; sR[1] = sLoxInputI1[5]; sR[2] = sLoxInputI1[6]; sR[3] = '\0';
+        }
+        else if (strlen(sLoxInputI1) == 6) {
+            sB[0] = '0'; sB[1] = '0'; sB[2] = '0'; sB[3] = '\0';
+            sG[0] = sLoxInputI1[0]; sG[1] = sLoxInputI1[1]; sG[2] = sLoxInputI1[2]; sG[3] = '\0';
+            sR[0] = sLoxInputI1[3]; sR[1] = sLoxInputI1[4]; sR[2] = sLoxInputI1[5]; sR[3] = '\0';
+        }
+        else if (strlen(sLoxInputI1) == 5) {
+            sB[0] = '0'; sB[1] = '0'; sB[2] = '0'; sB[3] = '\0';
+            sG[0] = '0'; sG[1] = sLoxInputI1[0]; sG[2] = sLoxInputI1[1]; sG[3] = '\0';
+            sR[0] = sLoxInputI1[2]; sR[1] = sLoxInputI1[3]; sR[2] = sLoxInputI1[4]; sR[3] = '\0';
+        }
+        else if (strlen(sLoxInputI1) == 4) {
+            sB[0] = '0'; sB[1] = '0'; sB[2] = '0'; sB[3] = '\0';
+            sG[0] = '0'; sG[1] = '0'; sG[2] = sLoxInputI1[0]; sG[3] = '\0';
+            sR[0] = sLoxInputI1[1]; sR[1] = sLoxInputI1[2]; sR[2] = sLoxInputI1[3]; sR[3] = '\0';
+        }
+        else if (strlen(sLoxInputI1) == 3) {
+            sB[0] = '0'; sB[1] = '0'; sB[2] = '0'; sB[3] = '\0';
+            sG[0] = '0'; sG[1] = '0'; sG[2] = '0'; sG[3] = '\0';
+            sR[0] = sLoxInputI1[0]; sR[1] = sLoxInputI1[1]; sR[2] = sLoxInputI1[2]; sR[3] = '\0';
+        }
+        else if (strlen(sLoxInputI1) == 2) {
+            sB[0] = '0'; sB[1] = '0'; sB[2] = '0'; sB[3] = '\0';
+            sG[0] = '0'; sG[1] = '0'; sG[2] = '0'; sG[3] = '\0';
+            sR[0] = '0'; sR[1] = sLoxInputI1[0]; sR[2] = sLoxInputI1[1]; sR[3] = '\0';
+        }
+        else if (strlen(sLoxInputI1) == 1) {
+            sB[0] = '0'; sB[1] = '0'; sB[2] = '0'; sB[3] = '\0';
+            sG[0] = '0'; sG[1] = '0'; sG[2] = '0'; sG[3] = '\0';
+            sR[0] = '0'; sR[1] = '0'; sR[2] = sLoxInputI1[0]; sR[3] = '\0';
+        }
+
+        // Convert the strings back to floats
+        fR = atoi(sR);
+        fG = atoi(sG);
+        fB = atoi(sB);
+
+        fR = fR / 100;
+        fG = fG / 100;
+        fB = fB / 100;
+        white = 0;
+
+        if (fR > 0.04045f) {
+            fPhilipsR = pow((fR + 0.055f) / (1.0f + 0.055f), 2.4f);
+        } else {
+            fPhilipsR = (fR / 12.92f);
+        }
+        
+        if (fG > 0.04045f) {
+            fPhilipsG = pow((fG + 0.055f) / (1.0f + 0.055f), 2.4f);
+        } else {
+            fPhilipsG = (fG / 12.92f);
+        }
+        
+        if (fB > 0.04045f) {
+            fPhilipsB = pow((fB + 0.055f) / (1.0f + 0.055f), 2.4f);
+        } else {
+            fPhilipsB = (fB / 12.92f);
+        }
+
+        float X = fPhilipsR * 0.4124 + fPhilipsG * 0.3576 + fPhilipsB * 0.1805;
+        float Y = fPhilipsR * 0.2126 + fPhilipsG * 0.7152 + fPhilipsB * 0.0722;
+        float Z = fPhilipsR * 0.0193 + fPhilipsG * 0.1192 + fPhilipsB * 0.9505;
+
+        float x = X / (X + Y + Z);
+        float y = Y / (X + Y + Z);
+        bri = Y * 260;
+
+        // set the values to the output
+        setoutput(0, x);
+        setoutput(1, y);
+        setoutput(2, bri);
+        void setPhilipsXyOutput(x, y, bri);
+    }
+    sleep(100);
+}
